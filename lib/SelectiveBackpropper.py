@@ -103,6 +103,10 @@ class SelectiveBackpropper:
         self.trainer.on_forward_pass(self.logger.handle_forward_batch)
 
     def next_epoch(self):
+        r"""
+        
+        
+        """
         self.logger.next_epoch()
 
     def next_partition(self):
