@@ -150,12 +150,19 @@ class Trainer(object):
         return self.counter >= self.max_num_backprops
 
     def train(self, trainloader):
-        for i, batch in enumerate(trainloader):
+        from tqdm import tqdm
+        
+        progress = tqdm(enumerate(trainloader))
+        for i, batch in progress:
             if self.stopped: break
             if i == len(trainloader) - 1:
                 self.train_batch(batch, final=True)
             else:
                 self.train_batch(batch, final=False)
+                
+            progress.set_description("Processing %s" % i)
+            #progress.refresh()
+            
 
     def train_batch(self, batch, final):
         pass

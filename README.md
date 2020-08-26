@@ -5,6 +5,11 @@ examples with high loss. SelectiveBackprop can reduce training time by up to
 3.5x faster than standard training with SGD. [Our
 paper](https://arxiv.org/abs/1910.00762) describes the system in detail.
 
+## Niel Hu 
+
+
+
+
 ## Prerequisites
 
 * Nvidia GPU with CUDA
