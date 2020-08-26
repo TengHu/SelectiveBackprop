@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.gaussian_process.kernels import Matern, WhiteKernel, ConstantKernel
+#from sklearn.gaussian_process.kernels import Matern, WhiteKernel, ConstantKernel
 from sklearn import gaussian_process
 
 class Predictor():
