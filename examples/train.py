@@ -234,6 +234,8 @@ def test_sb(loader, epoch, sb):
         pred = torch.max(pred.data, 1)[1]
         total += labels.size(0)
         correct += (pred == labels).sum().item()
+        
+        sb.logger.blob['test_acc'] += [(pred == labels).sum().item()] 
 
     test_loss /= total
     val_acc = correct / total
@@ -268,3 +270,5 @@ while (time.time() - start_time_seconds < args.hours * 3600.):
     sb.next_partition()
     test_acc = test_sb(test_loader, epoch, sb)
 
+
+sb.logger.write_to_file()

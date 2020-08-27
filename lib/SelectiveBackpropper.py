@@ -93,7 +93,7 @@ class SelectiveBackpropper:
                                                    lr_schedule=lr_sched,
                                                    forwardlr=forwardlr)
 
-        self.logger = loggers.Logger(log_interval = log_interval,
+        self.logger = loggers.MyLogger(log_interval = log_interval,
                                      epoch=start_epoch,
                                      num_backpropped=start_num_backpropped,
                                      num_skipped=start_num_skipped,
@@ -103,10 +103,6 @@ class SelectiveBackpropper:
         self.trainer.on_forward_pass(self.logger.handle_forward_batch)
 
     def next_epoch(self):
-        r"""
-        
-        
-        """
         self.logger.next_epoch()
 
     def next_partition(self):

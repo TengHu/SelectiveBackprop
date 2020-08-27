@@ -159,9 +159,6 @@ class Trainer(object):
                 self.train_batch(batch, final=True)
             else:
                 self.train_batch(batch, final=False)
-                
-            progress.set_description("Processing %s" % i)
-            #progress.refresh()
             
 
     def train_batch(self, batch, final):

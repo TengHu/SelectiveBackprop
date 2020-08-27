@@ -7,6 +7,7 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from PIL import Image
+from collections import defaultdict
 
 
 class ImageWriter(object):
@@ -380,6 +381,8 @@ class VariancesByAverageProbabilityByImageLogger(object):
             print(latest_file)
             pickle.dump(out, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+
+        
 class Logger(object):
 
     def __init__(self, log_interval=1, epoch=0, num_backpropped=0, num_skipped=0, num_skipped_fp=0, num_forwards=0, start_time_seconds=None):
@@ -475,3 +478,46 @@ class Logger(object):
             print(self.train_debug)
 
 
+
+            
+class MyLogger(Logger):
+    def __init__(self, log_interval=1, epoch=0, num_backpropped=0, num_skipped=0, num_skipped_fp=0, num_forwards=0, start_time_seconds=None):
+        super(MyLogger, self).__init__(log_interval, epoch, num_backpropped, num_skipped, num_skipped_fp, num_forwards, start_time_seconds)
+        self.blob = defaultdict(list)
+        self.debug = True
+    
+    def handle_backward_batch(self, batch):
+
+        self.current_batch += 1
+
+        num_backpropped = sum([int(em.example.select) for em in batch])
+        num_skipped = sum([int(not em.example.select) for em in batch])
+        self.global_num_backpropped += num_backpropped
+        self.global_num_skipped += num_skipped
+
+        if self.debug:
+            self.partition_num_backpropped += num_backpropped
+            self.partition_num_skipped += num_skipped
+            self.partition_backpropped_loss += sum([em.example.backpropped_loss
+                                                    for em in batch
+                                                    if em.example.backpropped_loss])
+            chosen = [em for em in batch if em.example.select]
+            self.partition_num_correct += sum([1 for em in chosen if em.example.correct])
+
+            
+            self.blob['global_num_backpropped'] += [num_backpropped]
+            self.blob['global_total_forwards'] += [num_skipped + num_backpropped]
+            
+            
+            
+            self.write()
+    
+    def write(self):
+        pass
+        '''if self.current_batch % self.log_interval == 0:
+            self.blob["test"] += [1]'''
+            
+    
+    def write_to_file(self):
+        with open('./logger.blob.pickle', 'wb') as handle:
+            pickle.dump(self.blob, handle, pickle.HIGHEST_PROTOCOL)
