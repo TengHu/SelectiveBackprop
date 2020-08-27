@@ -486,14 +486,32 @@ class MyLogger(Logger):
         self.blob = defaultdict(list)
         self.debug = True
     
+    def handle_forward_batch(self, batch):
+        # Populate batch_stats
+        # self.partition_loss += sum([example.loss for em in batch])
+        num_fps = sum([int(em.example.forward_select) for em in batch])
+        num_skipped_fp = sum([int(not em.example.forward_select) for em in batch])
+        self.blob['num_fps'] += [num_fps]
+        self.blob['total_fps'] += [num_fps + num_skipped_fp]
+        
+        self.global_num_skipped_fp += num_skipped_fp
+        self.global_num_forwards += sum([int(em.example.forward_select) for em in batch])
+        
+        
+        
+    
     def handle_backward_batch(self, batch):
 
         self.current_batch += 1
 
         num_backpropped = sum([int(em.example.select) for em in batch])
         num_skipped = sum([int(not em.example.select) for em in batch])
+        
         self.global_num_backpropped += num_backpropped
         self.global_num_skipped += num_skipped
+        
+        self.blob['num_bps'] += [num_backpropped]
+        self.blob['total_bps'] += [num_skipped + num_backpropped]
 
         if self.debug:
             self.partition_num_backpropped += num_backpropped
@@ -504,11 +522,6 @@ class MyLogger(Logger):
             chosen = [em for em in batch if em.example.select]
             self.partition_num_correct += sum([1 for em in chosen if em.example.correct])
 
-            
-            self.blob['global_num_backpropped'] += [num_backpropped]
-            self.blob['global_total_forwards'] += [num_skipped + num_backpropped]
-            
-            
             
             self.write()
     

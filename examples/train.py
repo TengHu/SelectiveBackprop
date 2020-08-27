@@ -40,6 +40,10 @@ dataset_options = ['cifar10', 'cifar100', 'svhn']
 calculator_options = ['relative', 'random', 'hybrid']
 fp_selector_options = ['alwayson', 'stale']
 
+
+
+
+
 parser = argparse.ArgumentParser(description='CNN')
 parser.add_argument('--dataset', '-d', default='cifar10',
                     choices=dataset_options)
@@ -235,7 +239,7 @@ def test_sb(loader, epoch, sb):
         total += labels.size(0)
         correct += (pred == labels).sum().item()
         
-        sb.logger.blob['test_acc'] += [(pred == labels).sum().item()] 
+        sb.logger.blob['test_acc'] += [(pred == labels).sum().item() / labels.size(0)] 
 
     test_loss /= total
     val_acc = correct / total
