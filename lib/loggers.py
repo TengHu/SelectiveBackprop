@@ -491,11 +491,14 @@ class MyLogger(Logger):
         # self.partition_loss += sum([example.loss for em in batch])
         num_fps = sum([int(em.example.forward_select) for em in batch])
         num_skipped_fp = sum([int(not em.example.forward_select) for em in batch])
+        
         self.blob['num_fps'] += [num_fps]
-        self.blob['total_fps'] += [num_fps + num_skipped_fp]
+        self.blob['num_skipped_fp'] += [num_skipped_fp]
+        
+        self.blob['batch_fp'] += [len(batch)]
         
         self.global_num_skipped_fp += num_skipped_fp
-        self.global_num_forwards += sum([int(em.example.forward_select) for em in batch])
+        self.global_num_forwards += num_fps
         
         
         
@@ -511,7 +514,10 @@ class MyLogger(Logger):
         self.global_num_skipped += num_skipped
         
         self.blob['num_bps'] += [num_backpropped]
-        self.blob['total_bps'] += [num_skipped + num_backpropped]
+        self.blob['num_skipped_bps'] += [num_skipped]
+        
+        
+        self.blob['batch_bp'] += [len(batch)]
 
         if self.debug:
             self.partition_num_backpropped += num_backpropped
