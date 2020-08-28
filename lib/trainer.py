@@ -154,6 +154,7 @@ class Trainer(object):
         
         progress = tqdm(enumerate(trainloader))
         for i, batch in progress:
+            
             if self.stopped: break
             if i == len(trainloader) - 1:
                 self.train_batch(batch, final=True)
@@ -168,6 +169,9 @@ class Trainer(object):
         pass
 
     def get_batch(self, final):
+        r"""
+        Scanning batches and return once reach target batch size
+        """
         num_images_to_backprop = 0
         for index, em in enumerate(self.backprop_queue):
             num_images_to_backprop += int(em.example.select)
@@ -176,6 +180,8 @@ class Trainer(object):
                 backprop_batch = self.backprop_queue[:index+1]
                 self.backprop_queue = self.backprop_queue[index+1:]
                 return backprop_batch
+            
+            
         if final:
             def get_num_to_backprop(batch):
                 return sum([1 for em in batch if em.example.select])
@@ -232,15 +238,32 @@ class MemoizedTrainer(Trainer):
         batch_marked_for_fp = self.fp_selector.mark(EMs)
         self.forward_queue += batch_marked_for_fp
         batch_to_fp = self.get_forward_batch(final)
+        
         if batch_to_fp:
             forward_pass_batch = self.forwardpropper.forward_pass(batch_to_fp)
             annotated_forward_batch = self.selector.mark(forward_pass_batch)
+            
+            
             self.emit_forward_pass(annotated_forward_batch)
             self.backprop_queue += annotated_forward_batch
+            
+            r"""
+            once reach batch size, pass all the previous onces from queue into a batch
+            """
             backprop_batch = self.get_batch(final)
+            
             if backprop_batch:
+                r"""
+                backward_pass is actually forward and backward :(
+                
+                annotated_backward_batch is still select and unselect, so not real batch :(
+                """
+                
                 annotated_backward_batch = self.backpropper.backward_pass(backprop_batch)
+                
                 self.emit_backward_pass(annotated_backward_batch)
+                
+                
 
     def get_forward_batch(self, final):
         num_images_to_fp = 0

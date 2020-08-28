@@ -242,6 +242,15 @@ def test_sb(loader, epoch, sb):
 
     test_loss /= total
     val_acc = correct / total
+    
+    
+    sb.logger.blob['test_epoch_acc'] += [val_acc] 
+    
+    sb.logger.blob['global_num_forwards'] += [sb.logger.global_num_forwards] 
+    sb.logger.blob['global_num_skipped_fp'] += [sb.logger.global_num_skipped_fp] 
+    sb.logger.blob['global_num_backpropped'] += [sb.logger.global_num_backpropped] 
+    sb.logger.blob['global_num_skipped'] += [sb.logger.global_num_skipped] 
+    
 
     print('============ EPOCH {} ============'.format(epoch))
     print('FPs: {} / {}\nBPs: {} / {}\nTest loss: {:.6f}\nTest acc: {:.3f} \nTime elapsed: {:.2f}s'.format(
@@ -258,6 +267,8 @@ def test_sb(loader, epoch, sb):
 stopped = False 
 epoch = -1
 
+
+test_sb(test_loader, epoch, sb)
 while (time.time() - start_time_seconds < args.hours * 3600.):
     epoch += 1
 

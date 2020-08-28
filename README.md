@@ -7,8 +7,20 @@ paper](https://arxiv.org/abs/1910.00762) describes the system in detail.
 
 ## Niel Hu 
 
+on Lambda Cloud, don't use virtualenv otherwise couldn't find cuda
+use python3, pip3 instead of python
 
-Partition is an epoch here
+
+Partition is an epoch in this repo
+this repo is in bad shape
+
+
+python3 examples/train.py --strategy sb --dataset cifar10 --hours 0.25
+
+
+run python on multiple runs
+sample on corrects and compare
+
 
 ## Prerequisites
 
@@ -21,7 +33,7 @@ Partition is an epoch here
 
 ### Train using SelectiveBackprop
 ```
-$ python examples/train.py --strategy sb --dataset <cifar10|cifar100|svhn>
+$ python examples/train.py --strategy sb --dataset <cifar10|cifar100|svhn> --hours 0.1
 
 Files already downloaded and verified
 Files already downloaded and verified

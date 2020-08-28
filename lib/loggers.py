@@ -484,7 +484,7 @@ class MyLogger(Logger):
     def __init__(self, log_interval=1, epoch=0, num_backpropped=0, num_skipped=0, num_skipped_fp=0, num_forwards=0, start_time_seconds=None):
         super(MyLogger, self).__init__(log_interval, epoch, num_backpropped, num_skipped, num_skipped_fp, num_forwards, start_time_seconds)
         self.blob = defaultdict(list)
-        self.debug = True
+        self.debug = False
     
     def handle_forward_batch(self, batch):
         # Populate batch_stats
@@ -492,10 +492,8 @@ class MyLogger(Logger):
         num_fps = sum([int(em.example.forward_select) for em in batch])
         num_skipped_fp = sum([int(not em.example.forward_select) for em in batch])
         
-        self.blob['num_fps'] += [num_fps]
-        self.blob['num_skipped_fp'] += [num_skipped_fp]
-        
-        self.blob['batch_fp'] += [len(batch)]
+        #self.blob['num_fps'] += [num_fps]
+        #self.blob['num_skipped_fp'] += [num_skipped_fp]
         
         self.global_num_skipped_fp += num_skipped_fp
         self.global_num_forwards += num_fps
@@ -504,7 +502,7 @@ class MyLogger(Logger):
         
     
     def handle_backward_batch(self, batch):
-
+        
         self.current_batch += 1
 
         num_backpropped = sum([int(em.example.select) for em in batch])
@@ -513,12 +511,14 @@ class MyLogger(Logger):
         self.global_num_backpropped += num_backpropped
         self.global_num_skipped += num_skipped
         
-        self.blob['num_bps'] += [num_backpropped]
-        self.blob['num_skipped_bps'] += [num_skipped]
+        #self.blob['num_bps'] += [num_backpropped]
+        #self.blob['num_skipped_bps'] += [num_skipped]
+        #self.blob['num_batch'] += [self.current_batch]
         
-        
-        self.blob['batch_bp'] += [len(batch)]
 
+        
+        
+        
         if self.debug:
             self.partition_num_backpropped += num_backpropped
             self.partition_num_skipped += num_skipped
